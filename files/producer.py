@@ -1,0 +1,30 @@
+from kafka import KafkaAdminClient
+from kafka.admin import NewTopic
+from kafka.errors import UnknownTopicOrPartitionError
+import weather
+import KafkaProducer
+import KafkaConsumer
+from report_pb2 import Report
+
+broker = 'localhost:9092'
+admin_client = KafkaAdminClient(bootstrap_servers=[broker])
+
+try:
+    admin_client.delete_topics(["temperatures"])
+    print("Deleted topics successfully")
+except UnknownTopicOrPartitionError:
+    print("Cannot delete topic/s (may not exist yet)")
+
+time.sleep(3) # Deletion sometimes takes a while to reflect
+
+# TODO: Create topic 'temperatures' with 4 partitions and replication factor = 1
+admin_client.create_topics([NewTopic(name="temperatures", num_partitions=4, replication_factor=1)])
+
+print("Topics:", admin_client.list_topics())
+
+producer = KafkaProducer(bootstrap_servers=[broker], acks="all", retries=10)
+month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+# Runs infinitely because the weather never ends
+for date, degrees in weather.get_next_weather(delay_sec=0.1):
+    report = Report(date=date, degrees=degrees)
+    result = producer.send("temperatures", value=report.SerializeToString(), key=month[int(date[5:7])-1]) # date, max_temperature
