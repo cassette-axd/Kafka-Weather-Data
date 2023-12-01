@@ -2,11 +2,11 @@ from kafka import KafkaAdminClient
 from kafka.admin import NewTopic
 from kafka.errors import UnknownTopicOrPartitionError
 import weather
-import KafkaProducer
-import KafkaConsumer
+from kafka import KafkaProducer
 from report_pb2 import Report
+import time
 
-broker = 'localhost:9092'
+broker = "localhost:9092"
 admin_client = KafkaAdminClient(bootstrap_servers=[broker])
 
 try:
@@ -27,4 +27,4 @@ month = ["January", "February", "March", "April", "May", "June", "July", "August
 # Runs infinitely because the weather never ends
 for date, degrees in weather.get_next_weather(delay_sec=0.1):
     report = Report(date=date, degrees=degrees)
-    result = producer.send("temperatures", value=report.SerializeToString(), key=month[int(date[5:7])-1]) # date, max_temperature
+    result = producer.send("temperatures", value=report.SerializeToString(), key=bytes(month[int(date[5:7])-1], "utf-8")) # date, max_temperature
