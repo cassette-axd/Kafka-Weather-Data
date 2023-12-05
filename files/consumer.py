@@ -23,7 +23,7 @@ try:
     partition_data = {partition: {"partition": partition, "offset": 0} for partition in partitions}
     for partition in partitions:
         # Check if partition-N.json exists
-        filename = f'/files/partition-{partition}.json'
+        filename = f'partition-{partition}.json'
         try:
             with open(filename, 'r') as f:
                 partition_data[partition] = json.load(f)
@@ -41,7 +41,7 @@ try:
     while True:
         batch = consumer.poll(1000)
         for partition, messages in batch.items():
-            filename = f'/files/partition-{partition}.json'
+            filename = f'partition-{partition}.json'
             # partition_data = {"partition": partition, "offset": partition.position().offset}
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
