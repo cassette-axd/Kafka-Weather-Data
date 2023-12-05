@@ -54,7 +54,7 @@ try:
                 report.ParseFromString(value)
                 date = report.date
                 year = date[:4]
-                degrees = int(msg.value.degrees)
+                degrees = int(report.degrees)
 
                 if timestamp.date() <= partition_data[partition][month][year].get('end'):
                     continue  # Suppress duplicate dates
