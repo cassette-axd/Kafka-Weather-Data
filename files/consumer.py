@@ -47,7 +47,7 @@ try:
             # partition_data = {"partition": partition, "offset": partition.position().offset}
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
-            partition_data[partition].update({"partition": partition, "offset": messages[-1].offset + 1})
+            partition_data[TopicPartition("temperatures", partition)].update({"partition": partition, "offset": messages[-1].offset + 1})
             for msg in messages:
                 value = msg.value
                 month = str(msg.key, "utf-8")
