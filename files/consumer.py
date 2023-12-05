@@ -3,6 +3,7 @@ import json
 import sys
 import os
 from collections import defaultdict
+from report_pb2 import Report
 
 def write_atomic(data, path):
     path2 = path + ".tmp"
@@ -47,8 +48,11 @@ try:
             #     json.dump(partition_data, f)
             partition_data[partition] = {"partition": partition, "offset": messages[-1].offset + 1}
             for msg in messages:
+                value = msg.value
                 month = str(msg.key, "utf-8")
-                date = msg.value.date
+                report = Report()
+                report.ParseFromString(value)
+                date = report.date
                 year = date[:4]
                 degrees = int(msg.value.degrees)
 
