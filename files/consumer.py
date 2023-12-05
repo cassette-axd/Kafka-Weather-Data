@@ -23,31 +23,31 @@ consumer.assign([TopicPartition("temperatures", partition) for partition in part
 
 try:
     partition_data = {partition: {"partition": partition, "offset": 0} for partition in partitions}
-    for partition in partitions:
+    for curr_partition in partitions:
         # Check if partition-N.json exists
-        filename = f'partition-{partition}.json'
+        filename = f'partition-{curr_partition}.json'
         try:
             with open(filename, 'r') as f:
-                partition_data[partition] = json.load(f)
+                partition_data[curr_partition] = json.load(f)
         except FileNotFoundError:
             # Initialize partition-N.json if it does not exist
-            partition_data[partition] = {"partition": partition, "offset": 0}
+            partition_data[curr_partition] = {"partition": curr_partition, "offset": 0}
             offset = 0
             # with open(filename, 'w') as f:
             #     json.dump(partition_data[partition], f)
-            write_atomic(partition_data[partition], filename)
+            write_atomic(partition_data[curr_partition], filename)
 
         # Seek to the specified offset
-        consumer.seek(TopicPartition("temperatures", partition), partition_data[partition]['offset'])
+        consumer.seek(TopicPartition("temperatures", curr_partition), partition_data[curr_partition]['offset'])
 
     while True:
         batch = consumer.poll(1000)
-        for partition, messages in batch.items():
+        for curr_partition, messages in batch.items():
             filename = f'partition-{partition}.json'
             # partition_data = {"partition": partition, "offset": partition.position().offset}
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
-            partition_data[TopicPartition("temperatures", partition)].update({"partition": partition, "offset": messages[-1].offset + 1})
+            partition_data[curr_partition].update({"partition": curr_partition, "offset": messages[-1].offset + 1})
             for msg in messages:
                 value = msg.value
                 month = str(msg.key, "utf-8")
@@ -57,23 +57,24 @@ try:
                 year = date[:4]
                 degrees = int(report.degrees)
 
+                # convert dates into datetime objects to make them comparable
                 curr_date = datetime.strptime(str(date), "%Y-%m-%d")
-                latest_date = datetime.strptime(str(partition_data[partition][month][year]['end']), "%Y-%m-%d")
+                latest_date = datetime.strptime(str(partition_data[curr_partition][month][year]['end']), "%Y-%m-%d")
                 if curr_date <= latest_date:
                     continue  # Suppress duplicate dates
                 
-                partition_data[partition][month][year]['end'] = date
-                partition_data[partition][month][year]['count'] += 1
-                partition_data[partition][month][year]['sum'] += degrees
-                partition_data[partition][month][year]['avg'] = (
-                    partition_data[partition][month][year]['sum'] /
-                    partition_data[partition][month][year]['count']
+                partition_data[curr_partition][month][year]['end'] = date
+                partition_data[curr_partition][month][year]['count'] += 1
+                partition_data[curr_partition][month][year]['sum'] += degrees
+                partition_data[curr_partition][month][year]['avg'] = (
+                    partition_data[curr_partition][month][year]['sum'] /
+                    partition_data[curr_partition][month][year]['count']
                 )
 
-                if partition_data[partition][month][year]['start'] is None:
-                    partition_data[partition][month][year]['start'] = date
+                if partition_data[curr_partition][month][year]['start'] is None:
+                    partition_data[curr_partition][month][year]['start'] = date
 
-            write_atomic(partition_data[partition], filename)
+            write_atomic(partition_data[curr_partition], filename)
 except KeyboardInterrupt:
     pass
 finally:
