@@ -6,9 +6,9 @@ from collections import defaultdict
 
 def write_atomic(data, path):
     path2 = path + ".tmp"
-    with open(tmp_path, "w") as f:
+    with open(path2, "w") as f:
         json.dump(data, f)
-    os.replace(tmp_path, path)
+    os.replace(path2, path)
 
 partitions = [int(partition) for partition in sys.argv[1:]]
 partitions.sort()
