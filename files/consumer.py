@@ -29,7 +29,7 @@ try:
                 partition_data[partition] = json.load(f)
         except FileNotFoundError:
             # Initialize partition-N.json if it does not exist
-            partition_data = {"partition": partition, "offset": 0}
+            partition_data[partition] = {"partition": partition, "offset": 0}
             offset = 0
             # with open(filename, 'w') as f:
             #     json.dump(partition_data[partition], f)
