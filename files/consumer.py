@@ -22,7 +22,7 @@ consumer.assign([TopicPartition("temperatures", partition) for partition in part
 # consumer.seek_to_beginning()
 
 try:
-    partition_data = {partition.partition: {"partition": partition.partition, "offset": 0} for partition in partitions}
+    partition_data = {partition: {"partition": partition, "offset": 0} for partition in partitions}
     for curr_partition in partitions:
         # Check if partition-N.json exists
         filename = f'partition-{curr_partition}.json'
@@ -47,7 +47,7 @@ try:
             # partition_data = {"partition": partition, "offset": partition.position().offset}
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
-            partition_data[curr_partition.partition].update({"partition": curr_partition.partition, "offset": messages[-1].offset + 1})
+            partition_data[curr_partition].update({"partition": curr_partition, "offset": messages[-1].offset + 1})
             for msg in messages:
                 value = msg.value
                 month = str(msg.key, "utf-8")
