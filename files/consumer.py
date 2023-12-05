@@ -1,6 +1,8 @@
 from kafka import KafkaConsumer, TopicPartition
 import json
 import sys
+import os
+from collections import defaultdict
 
 def write_atomic(data, path):
     path2 = path + ".tmp"
@@ -44,6 +46,26 @@ try:
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
             partition_data[partition] = {"partition": partition, "offset": messages[-1].offset + 1}
+            for msg in messages:
+                month = str(msg.keys(), "utf-8")
+                date = msg.value.date
+                year = date[:4]
+                degrees = int(msg.value.degrees)
+
+                if timestamp.date() <= partition_data[partition][month][year].get('end'):
+                    continue  # Suppress duplicate dates
+                
+                partition_data[partition][month][year]['end'] = date
+                partition_data[partition][month][year]['count'] += 1
+                partition_data[partition][month][year]['sum'] += degrees
+                partition_data[partition][month][year]['avg'] = (
+                    partition_data[partition][month][year]['sum'] /
+                    partition_data[partition][month][year]['count']
+                )
+
+                if partition_data[partition][month][year]['start'] is None:
+                    partition_data[partition][month][year]['start'] = date
+
             write_atomic(partition_data[partition], filename)
 except: KeyboardInterrupt:
     pass
