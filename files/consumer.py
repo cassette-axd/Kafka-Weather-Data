@@ -56,7 +56,7 @@ try:
                 year = date[:4]
                 degrees = int(report.degrees)
 
-                if timestamp.date() <= partition_data[partition][month][year].get('end'):
+                if date <= partition_data[partition][month][year].get('end'):
                     continue  # Suppress duplicate dates
                 
                 partition_data[partition][month][year]['end'] = date
