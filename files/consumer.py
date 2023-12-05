@@ -43,7 +43,7 @@ try:
     while True:
         batch = consumer.poll(1000)
         for curr_partition, messages in batch.items():
-            filename = f'partition-{partition}.json'
+            filename = f'partition-{curr_partition}.json'
             # partition_data = {"partition": partition, "offset": partition.position().offset}
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
