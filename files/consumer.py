@@ -36,7 +36,7 @@ try:
             write_atomic(partition_data[partition], filename)
 
         # Seek to the specified offset
-        consumer.seek(TopicPartition(topic, partition), partition_data[partition]['offset'])
+        consumer.seek(TopicPartition("temperatures", partition), partition_data[partition]['offset'])
 
     while True:
         batch = consumer.poll(1000)
