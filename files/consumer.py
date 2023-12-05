@@ -67,7 +67,7 @@ try:
                     partition_data[partition][month][year]['start'] = date
 
             write_atomic(partition_data[partition], filename)
-except: KeyboardInterrupt:
+except KeyboardInterrupt:
     pass
 finally:
     consumer.close()
