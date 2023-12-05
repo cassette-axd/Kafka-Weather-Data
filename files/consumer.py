@@ -47,7 +47,7 @@ try:
             #     json.dump(partition_data, f)
             partition_data[partition] = {"partition": partition, "offset": messages[-1].offset + 1}
             for msg in messages:
-                month = str(msg.keys(), "utf-8")
+                month = str(msg.key, "utf-8")
                 date = msg.value.date
                 year = date[:4]
                 degrees = int(msg.value.degrees)
