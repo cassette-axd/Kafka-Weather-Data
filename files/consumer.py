@@ -4,6 +4,7 @@ import sys
 import os
 from collections import defaultdict
 from report_pb2 import Report
+from datetime import datetime
 
 def write_atomic(data, path):
     path2 = path + ".tmp"
@@ -56,7 +57,9 @@ try:
                 year = date[:4]
                 degrees = int(report.degrees)
 
-                if date <= partition_data[partition][month][year].get('end'):
+                curr_date = datetime.strptime(str(date), "%Y-%m-%d")
+                latest_date = datetime.strptime(str(partition_data[partition][month][year]['end']), "%Y-%m-%d")
+                if curr_date <= latest_date:
                     continue  # Suppress duplicate dates
                 
                 partition_data[partition][month][year]['end'] = date
