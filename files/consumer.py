@@ -22,7 +22,7 @@ consumer.assign([TopicPartition("temperatures", partition) for partition in part
 # consumer.seek_to_beginning()
 
 try:
-    partition_data = {curr_partition.partition: {"partition": curr_partition.partition, "offset": 0} for curr_partition in partitions}
+    partition_data = {partition.partition: {"partition": partition.partition, "offset": 0} for partition in partitions}
     for curr_partition in partitions:
         # Check if partition-N.json exists
         filename = f'partition-{curr_partition}.json'
