@@ -1,1 +1,1 @@
-{"0": {"partition": 0, "offset": 0}, "2": {"partition": 2, "offset": 21}, "January": {"1990": {"count": 19, "sum": 695, "avg": 36.578947368421055, "end": "1990-01-19", "start": "1990-01-01"}}}
+{"partition": 2, "offset": 21, "January": {"1990": {"count": 19, "sum": 695, "avg": 36.578947368421055, "end": "1990-01-19", "start": "1990-01-01"}}}
