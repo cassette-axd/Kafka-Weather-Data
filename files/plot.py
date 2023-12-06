@@ -24,12 +24,6 @@ for partition in range(4):
 print(series)
 month_series = pd.Series(series)
 
-# month_series = pd.Series({
-#     'March-2009': 47.478365000000004,
-#     'February-2010': 34.99720714285714,
-#     'January-2010': 37.26354516129032
-# })
-
 fig, ax = plt.subplots()
 month_series.plot.bar(ax=ax)
 ax.set_ylabel('Avg. Max Temperature')
