@@ -1,5 +1,5 @@
 {
-  "score": 75,
+  "score": 85,
   "full_score": 100,
   "tests": {
     "test_all_files_present": "Couldn't find file files/plot.py",
@@ -11,7 +11,7 @@
     "test_proto_build": "PASS (5/5)",
     "test_debug_consumer_output": "PASS (10/10)",
     "test_consumer_runs": "PASS (10/10)",
-    "test_partition_json_creation": "No partition JSON has weather summary for November",
+    "test_partition_json_creation": "PASS (10/10)",
     "test_partition_json_contents": "PASS (15/15)",
     "test_plot_generation": [
       "Traceback (most recent call last):\n",

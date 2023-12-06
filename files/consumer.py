@@ -8,6 +8,7 @@ from datetime import datetime
 
 def write_atomic(data, path):
     path2 = path + ".tmp"
+    # print(path2)
     with open(path2, "w") as f:
         json.dump(data, f)
     os.replace(path2, path)
@@ -43,7 +44,8 @@ try:
     while True:
         batch = consumer.poll(1000)
         for curr_partition, messages in batch.items():
-            filename = f'/files/partition-{curr_partition}.json'
+            # print(curr_partition.partition)
+            filename = f'/files/partition-{curr_partition.partition}.json'
 
             pos = consumer.position(curr_partition)
             partition_data[curr_partition.partition]["offset"] = pos
