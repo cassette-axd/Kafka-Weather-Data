@@ -93,8 +93,6 @@ try:
                 write_atomic(partition_data[curr_partition.partition], filename)
 except KeyboardInterrupt:
     pass
-finally:
-    consumer.close()
 
 
 
