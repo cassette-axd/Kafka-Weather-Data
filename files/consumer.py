@@ -25,7 +25,7 @@ try:
     partition_data = {partition: {"partition": partition, "offset": 0} for partition in partitions}
     for curr_partition in partitions:
         # Check if partition-N.json exists
-        filename = f'partition-{curr_partition}.json'
+        filename = f'/files/partition-{curr_partition}.json'
         try:
             with open(filename, 'r') as f:
                 partition_data[curr_partition] = json.load(f)
@@ -43,11 +43,14 @@ try:
     while True:
         batch = consumer.poll(1000)
         for curr_partition, messages in batch.items():
-            filename = f'partition-{curr_partition}.json'
+            filename = f'/files/partition-{curr_partition}.json'
             # partition_data = {"partition": partition, "offset": partition.position().offset}
             # with open(filename, 'w') as f:
             #     json.dump(partition_data, f)
-            partition_data[curr_partition].update({"partition": curr_partition, "offset": messages[-1].offset + 1})
+            pos = consumer.position(curr_partition)
+            partition_data[partition_data[curr_partition.partition]["partition"]].update({"partition": curr_partition.partition, "offset": pos})
+            # print(partition_data)
+            # partition_data[curr_partition] = {"partition": curr_partition, "offset": partition_data[curr_partition]['offset']}
             for msg in messages:
                 value = msg.value
                 month = str(msg.key, "utf-8")
@@ -57,24 +60,49 @@ try:
                 year = date[:4]
                 degrees = int(report.degrees)
 
+                print(partition_data)
+                if month not in partition_data:
+                    partition_data[month] = {}
+                if year not in partition_data[month]:
+                    partition_data[month][year] = {
+                        "count": 1,
+                        "sum": degrees,
+                        "avg": degrees,
+                        "end": date,
+                        "start": date
+                    }
+                # partition_data[partition_data[curr_partition.partition]["partition"]].update({month: {year:{"count": None, "sum": None,
+                #     "avg": None, "end": None, "start": None}}})
+                print(partition_data)
+                print(date)
+
+                # # if there is no start date, assign the first date to start
+                # if partition_data[partition_data[curr_partition.partition]["partition"]][month][year]["start"] is None:
+                #     partition_data[partition_data[curr_partition.partition]["partition"]][month][year]["start"] = date
+                # print(partition_data)
+
+                # # initialize end date
+                # if partition_data[partition_data[curr_partition.partition]["partition"]][month][year]['end'] is None:
+                #     partition_data[partition_data[curr_partition.partition]["partition"]][month][year]['end'] = date
+                
                 # convert dates into datetime objects to make them comparable
                 curr_date = datetime.strptime(str(date), "%Y-%m-%d")
-                latest_date = datetime.strptime(str(partition_data[curr_partition][month][year]['end']), "%Y-%m-%d")
+                # print(partition_data[curr_partition.partition]["partition"])
+                # print(list(partition_data[month].keys())[0])
+                # print(partition_data[month][year]["end"])
+                latest_date = datetime.strptime(str(partition_data[month][year]["end"]), "%Y-%m-%d")
                 if curr_date <= latest_date:
-                    continue  # Suppress duplicate dates
+                    continue  # Skip rest of loop to suppress duplicate dates
                 
-                partition_data[curr_partition][month][year]['end'] = date
-                partition_data[curr_partition][month][year]['count'] += 1
-                partition_data[curr_partition][month][year]['sum'] += degrees
-                partition_data[curr_partition][month][year]['avg'] = (
-                    partition_data[curr_partition][month][year]['sum'] /
-                    partition_data[curr_partition][month][year]['count']
+                partition_data[month][year]["end"] = date
+                partition_data[month][year]['count'] += 1
+                partition_data[month][year]['sum'] += degrees
+                partition_data[month][year]['avg'] = (
+                    partition_data[month][year]['sum'] /
+                    partition_data[month][year]['count']
                 )
 
-                if partition_data[curr_partition][month][year]['start'] is None:
-                    partition_data[curr_partition][month][year]['start'] = date
-
-            write_atomic(partition_data[curr_partition], filename)
+            write_atomic(partition_data, filename)
 except KeyboardInterrupt:
     pass
 finally:
