@@ -1,7 +1,7 @@
 # School Project: Weather Data Collector App
 
 ## Overview
-In this project we are given data about the weather in a specific location. The application the populates this data into a Kafka stream using a producer Python program. A consumer Python program consumes data from the stream to produce JSON files 
+In this project we are given data about the weather in a specific location. The application that populates this data into a Kafka stream using a producer Python program. A consumer Python program consumes data from the stream to produce JSON files 
 with summary stats, for use on a web dashboard. For simiplicity, the project uses a single Kafka broker rather than a cluster. The data collected is then displayed on a graph using matplotlib.pyplot. The purpose of this project is to learn how to use
 Kafka streaming to produce and collect data and then display that data visually.
 
